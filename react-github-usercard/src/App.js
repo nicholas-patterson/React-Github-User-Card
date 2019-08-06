@@ -6,37 +6,29 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 
-//import { makeStyles } from "@material-ui/core/styles";
-
-// const useStyles = makeStyles(theme => ({
-//   textField: {
-//     marginLeft: theme.spacing(1),
-//     marginRight: theme.spacing(1),
-//     width: 200
-//   }
-// }));
-
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       userData: {},
       followers: [],
-      currentUsername: "",
+      currentUsername: "nicholas-patterson",
       updatedUsername: ""
     };
   }
 
   fetchGithubData = () => {
     axios
-      .get("https://api.github.com/users/nicholas-patterson")
+      .get(`https://api.github.com/users/${this.state.currentUsername}`)
       .then(res => this.setState({ userData: res.data }))
       .catch(err => console.log(err));
   };
 
   fetchFollowersData = () => {
     axios
-      .get("https://api.github.com/users/nicholas-patterson/followers")
+      .get(
+        `https://api.github.com/users/${this.state.currentUsername}/followers`
+      )
       .then(res => this.setState({ followers: res.data }))
       .catch(err => console.log(err));
   };
@@ -44,6 +36,26 @@ class App extends React.Component {
   componentDidMount = () => {
     this.fetchGithubData();
     this.fetchFollowersData();
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.setState({
+      currentUsername: this.state.updatedUsername
+    });
+  };
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (prevState.currentUsername !== this.state.currentUsername) {
+      this.fetchGithubData();
+      this.fetchFollowersData();
+    }
+  };
+
+  updatedUsername = e => {
+    this.setState({
+      updatedUsername: e.target.value
+    });
   };
 
   render() {
@@ -61,6 +73,14 @@ class App extends React.Component {
             userData={this.state.userData}
             followers={this.state.followers}
           />
+          <form onSubmit={this.handleSubmit}>
+            <input
+              type="text"
+              onChange={this.updatedUsername}
+              value={this.state.updatedUsername}
+              name="updatedUsername"
+            />
+          </form>
         </div>
       </div>
     );
