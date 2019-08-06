@@ -21,14 +21,16 @@ class App extends React.Component {
     super();
     this.state = {
       userData: {},
-      followers: []
+      followers: [],
+      currentUsername: "",
+      updatedUsername: ""
     };
   }
 
   fetchGithubData = () => {
     axios
       .get("https://api.github.com/users/nicholas-patterson")
-      .then(res => console.log(res.data))
+      .then(res => this.setState({ userData: res.data }))
       .catch(err => console.log(err));
   };
 
